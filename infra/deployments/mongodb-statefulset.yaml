@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+spec:
+  serviceName: mongodb-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        selector: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:4.0.8
+      nodeSelector:
+        node: docker
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: mongodb-persistent-volume-claim

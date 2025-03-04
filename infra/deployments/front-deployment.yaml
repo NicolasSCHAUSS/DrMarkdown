@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: front-app-deployment
+  labels:
+    name: front-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: front-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: front-app
+    spec:
+      containers:
+        - image: drmarkdown:front
+          name: front-app
+          imagePullPolicy: Never
+          ports: 
+            - containerPort: 80
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      restartPolicy: Always
+

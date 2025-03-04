@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: nginx-controller-deployment
+  labels:
+    name: nginx-controller-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nginx-controller
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: nginx-controller
+    spec:
+      serviceAccountName: nginx-controller-account
+      containers:
+        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.31.1
+          name: nginx-controller
+          imagePullPolicy: Always
+          ports: 
+            - name: http 
+              containerPort: 80
+            - name: https
+              containerPort: 443
+          securityContext: 
+            allowPrivilegeEscalation: true
+            runAsUser: 101 #nginx
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          args:
+            - /nginx-ingress-controller
+            - --configmap=$(POD_NAMESPACE)/nginx-ingress-controller-config
+            - --report-node-internal-ip-address=true
+      restartPolicy: Always
+

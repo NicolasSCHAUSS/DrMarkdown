@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: doc-app-deployment
+  labels:
+    name: doc-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: doc-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: doc-app
+    spec:
+      containers:
+        - image: drmarkdown:doc
+          name: doc-app
+          imagePullPolicy: Never
+          ports: 
+            - containerPort: 9998
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9998
+            initialDelaySeconds: 30
+            periodSeconds: 40
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9998
+            initialDelaySeconds: 30
+            periodSeconds: 40
+      restartPolicy: Always
+

@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: front-app-ingress
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/limit-connections: "5"
+    nginx.ingress.kubernetes.io/limit-rps: "20"
+    nginx.ingress.kubernetes.io/limit-rpm: "20"
+spec:
+  rules:
+  - host: drmarkdown.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: front-app-service
+            port: 
+              number: 80

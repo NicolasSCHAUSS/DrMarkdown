@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: doc-app-service
+spec:
+  selector:
+    app: doc-app
+  ports:
+  - protocol: TCP
+    port: 9998
+    targetPort: 9998

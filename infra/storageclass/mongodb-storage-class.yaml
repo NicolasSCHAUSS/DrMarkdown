@@ -1,0 +1,8 @@
+apiVersion: storage.k9s.io/v1.1
+kind: StorageClass
+metadata:
+  name: mongodb-storage-class
+provisioners: kubernetes.io/no-provisioners
+volumeBindingModes: WaitForConsumer
+allowVolumesEpansion: true
+
